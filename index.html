@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeighborWorks - Community Local Service Referrals</title>
+    <meta name="description" content="Find and refer trusted local helpers in your locality: Barbers, Maids, Drivers, Electricians, Plumbers, Cooks and more. Direct community recommendations.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-handshake-angle"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>NeighborWorks</h1>
+                    <span class="tagline">Locality Referral Network</span>
+                </div>
+            </div>
+
+            <div class="locality-selector-wrapper">
+                <i class="fa-solid fa-location-dot"></i>
+                <select id="headerLocalitySelect" class="locality-select">
+                    <option value="all">📍 All Localities</option>
+                    <option value="Green Park">Green Park</option>
+                    <option value="Sunrise Heights">Sunrise Heights</option>
+                    <option value="Central Valley">Central Valley</option>
+                    <option value="Lakeview Enclave">Lakeview Enclave</option>
+                    <option value="Metro Heights">Metro Heights</option>
+                </select>
+            </div>
+
+            <div class="header-actions">
+                <button id="themeToggleBtn" class="icon-btn" title="Toggle Theme" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <button id="favoritesBtn" class="icon-btn badge-btn" title="Saved Providers" aria-label="Saved Providers">
+                    <i class="fa-solid fa-bookmark"></i>
+                    <span id="favCountBadge" class="badge">0</span>
+                </button>
+                <button id="openReferralModalBtn" class="btn btn-primary glow-effect">
+                    <i class="fa-solid fa-plus"></i> Refer a Worker
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <span class="hero-pill"><i class="fa-solid fa-shield-heart"></i> 100% Community Vouched & Verified</span>
+            <h2 class="hero-title">Find & Refer Trusted Local Service Helpers Nearby</h2>
+            <p class="hero-subtitle">Barbers, Maids, Drivers, Electricians, Plumbers & Cooks recommended directly by your neighbors in your locality.</p>
+
+            <div class="search-bar-container">
+                <div class="search-input-group">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search by name, role (e.g. Barber, Maid, Driver), skills or locality..." autocomplete="off">
+                    <button id="clearSearchBtn" class="clear-btn hidden"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <button id="searchTriggerBtn" class="btn btn-accent">
+                    Search
+                </button>
+            </div>
+
+            <!-- Quick Category Chips -->
+            <div class="category-chips-scroll" id="categoryChips">
+                <button class="chip active" data-category="all"><i class="fa-solid fa-grid-2"></i> All Services</button>
+                <button class="chip" data-category="Barber"><i class="fa-solid fa-scissors"></i> Barber</button>
+                <button class="chip" data-category="Maid"><i class="fa-solid fa-broom"></i> Maid / Housekeeping</button>
+                <button class="chip" data-category="Driver"><i class="fa-solid fa-car"></i> Personal Driver</button>
+                <button class="chip" data-category="Cook"><i class="fa-solid fa-utensils"></i> Cook / Chef</button>
+                <button class="chip" data-category="Electrician"><i class="fa-solid fa-bolt"></i> Electrician</button>
+                <button class="chip" data-category="Plumber"><i class="fa-solid fa-faucet-drip"></i> Plumber</button>
+                <button class="chip" data-category="Tutor"><i class="fa-solid fa-book-open"></i> Home Tutor</button>
+                <button class="chip" data-category="Gardener"><i class="fa-solid fa-leaf"></i> Gardener</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Stats & Controls Bar -->
+        <div class="controls-bar">
+            <div class="results-meta">
+                <span id="resultsCountText" class="results-count">Showing <strong>12</strong> service providers</span>
+                <span id="activeFilterBadge" class="filter-indicator hidden"></span>
+            </div>
+
+            <div class="view-controls">
+                <div class="sort-wrapper">
+                    <label for="sortBySelect"><i class="fa-solid fa-sort"></i> Sort:</label>
+                    <select id="sortBySelect" class="custom-select">
+                        <option value="rating">Top Rated</option>
+                        <option value="endorsements">Most Endorsed</option>
+                        <option value="experience">Most Experienced</option>
+                        <option value="recent">Recently Added</option>
+                    </select>
+                </div>
+
+                <div class="view-toggle-buttons">
+                    <button id="gridViewBtn" class="toggle-btn active" title="Grid View"><i class="fa-solid fa-border-all"></i> Grid</button>
+                    <button id="mapViewBtn" class="toggle-btn" title="Locality Map View"><i class="fa-solid fa-map-location-dot"></i> Map View</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-layout">
+            <!-- Sidebar Filters -->
+            <aside class="filters-sidebar">
+                <div class="sidebar-header">
+                    <h3><i class="fa-solid fa-sliders"></i> Filter Helpers</h3>
+                    <button id="resetFiltersBtn" class="reset-link">Reset All</button>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Locality / Neighborhood</label>
+                    <select id="sidebarLocalitySelect" class="custom-select full-width">
+                        <option value="all">All Localities</option>
+                        <option value="Green Park">Green Park</option>
+                        <option value="Sunrise Heights">Sunrise Heights</option>
+                        <option value="Central Valley">Central Valley</option>
+                        <option value="Lakeview Enclave">Lakeview Enclave</option>
+                        <option value="Metro Heights">Metro Heights</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Service Category</label>
+                    <select id="sidebarCategorySelect" class="custom-select full-width">
+                        <option value="all">All Categories</option>
+                        <option value="Barber">Barber</option>
+                        <option value="Maid">Maid / Housekeeper</option>
+                        <option value="Driver">Driver</option>
+                        <option value="Cook">Cook / Chef</option>
+                        <option value="Electrician">Electrician</option>
+                        <option value="Plumber">Plumber</option>
+                        <option value="Tutor">Home Tutor</option>
+                        <option value="Gardener">Gardener</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Minimum Community Rating</label>
+                    <div class="rating-filter-options">
+                        <label class="radio-option">
+                            <input type="radio" name="ratingFilter" value="0" checked>
+                            <span>Any Rating</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="ratingFilter" value="4.5">
+                            <span>⭐ 4.5 & Above</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="ratingFilter" value="4.0">
+                            <span>⭐ 4.0 & Above</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Trust & Verification</label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" id="verifiedOnlyCheckbox">
+                        <span><i class="fa-solid fa-circle-check text-verified"></i> Neighbor Verified Only</span>
+                    </label>
+                    <label class="checkbox-option">
+                        <input type="checkbox" id="hasPhoneCheckbox">
+                        <span><i class="fa-brands fa-whatsapp text-success"></i> Direct WhatsApp Available</span>
+                    </label>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Experience</label>
+                    <select id="experienceFilterSelect" class="custom-select full-width">
+                        <option value="0">Any Experience</option>
+                        <option value="3">3+ Years</option>
+                        <option value="5">5+ Years</option>
+                        <option value="10">10+ Years</option>
+                    </select>
+                </div>
+            </aside>
+
+            <!-- Main Provider Cards Section -->
+            <section class="providers-section">
+                <!-- Top Spotlight Carousel -->
+                <div class="spotlight-banner">
+                    <div class="spotlight-header">
+                        <span><i class="fa-solid fa-fire text-warning"></i> TOP RECOMMENDED IN YOUR COMMUNITY</span>
+                    </div>
+                    <div id="spotlightCards" class="spotlight-cards-container">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+
+                <!-- Grid View -->
+                <div id="providersGrid" class="providers-grid">
+                    <!-- Dynamic Helper Cards Insertion -->
+                </div>
+
+                <!-- Map View Container (Hidden by Default) -->
+                <div id="localityMapView" class="map-view-container hidden">
+                    <div class="map-header-info">
+                        <h4><i class="fa-solid fa-map-location-dot"></i> Interactive Locality Helper Map</h4>
+                        <p>Click on any marker pin to view helper details, ratings, and neighbor contact info.</p>
+                    </div>
+                    <div class="canvas-map-wrapper">
+                        <canvas id="localityMapCanvas" width="900" height="500"></canvas>
+                        <div id="mapTooltip" class="map-tooltip hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state hidden">
+                    <div class="empty-icon"><i class="fa-solid fa-user-slash"></i></div>
+                    <h3>No Service Providers Found</h3>
+                    <p>We couldn't find any helpers matching your current filters. Try resetting your search or refer someone new!</p>
+                    <button id="emptyReferBtn" class="btn btn-primary mt-3">
+                        <i class="fa-solid fa-plus"></i> Be the First to Refer in this Category
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <i class="fa-solid fa-handshake-angle"></i> NeighborWorks
+            </div>
+            <p>Empowering local neighborhoods by connecting verified barbers, maids, drivers, electricians & plumbers through community referrals.</p>
+            <div class="footer-links">
+                <a href="#categoryChips"><i class="fa-solid fa-magnifying-glass"></i> Find Helpers</a>
+                <a href="#" id="footerReferTrigger"><i class="fa-solid fa-user-plus"></i> Refer Someone</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODALS & DIALOGS -->
+
+    <!-- Modal 1: Refer a Worker Dialog -->
+    <dialog id="referralModal" class="custom-dialog">
+        <div class="dialog-header">
+            <h3><i class="fa-solid fa-user-plus text-accent"></i> Refer a Helper to Your Neighborhood</h3>
+            <button class="close-dialog-btn" id="closeReferralModalBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="dialog-body">
+            <p class="dialog-subtext">Do you know a trustworthy Barber, Maid, Driver, Electrician or Cook? Share their details to help them get local work!</p>
+            
+            <form id="referralForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="refName">Full Name of Helper *</label>
+                        <input type="text" id="refName" required placeholder="e.g. Ramesh Kumar, Sunita Devi">
+                    </div>
+                    <div class="form-group">
+                        <label for="refCategory">Service Category / Profession *</label>
+                        <select id="refCategory" required class="custom-select full-width">
+                            <option value="">Select Profession...</option>
+                            <option value="Barber">Barber / Hair Stylist</option>
+                            <option value="Maid">Maid / Housekeeper</option>
+                            <option value="Driver">Personal / Cab Driver</option>
+                            <option value="Cook">Cook / Home Chef</option>
+                            <option value="Electrician">Electrician</option>
+                            <option value="Plumber">Plumber</option>
+                            <option value="Tutor">Home Tutor</option>
+                            <option value="Gardener">Gardener</option>
+                            <option value="Carpenter">Carpenter</option>
+                            <option value="Painter">House Painter</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="refPhone">Phone Number *</label>
+                        <input type="tel" id="refPhone" required placeholder="e.g. +91 9876543210">
+                    </div>
+                    <div class="form-group">
+                        <label for="refWhatsapp">WhatsApp Number (Optional)</label>
+                        <input type="tel" id="refWhatsapp" placeholder="Same as phone or custom">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="refLocality">Locality / Neighborhood Area *</label>
+                        <select id="refLocality" required class="custom-select full-width">
+                            <option value="Green Park">Green Park</option>
+                            <option value="Sunrise Heights">Sunrise Heights</option>
+                            <option value="Central Valley">Central Valley</option>
+                            <option value="Lakeview Enclave">Lakeview Enclave</option>
+                            <option value="Metro Heights">Metro Heights</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="refExperience">Years of Experience</label>
+                        <input type="number" id="refExperience" min="0" max="40" value="4" placeholder="e.g. 5">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="refRate">Rates / Charges (Estimate)</label>
+                        <input type="text" id="refRate" placeholder="e.g. ₹200/visit, ₹4000/month, ₹300/hr">
+                    </div>
+                    <div class="form-group">
+                        <label for="refReferrer">Your Name (Referrer) *</label>
+                        <input type="text" id="refReferrer" required placeholder="e.g. Priya M., Neighbor Block-B">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="refReview">Your Endorsement / Recommendation *</label>
+                    <textarea id="refReview" rows="3" required placeholder="Why do you recommend them? (e.g., Very punctual, honest worker, excellent haircuts, safe driving skills...)"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="refAvatarStyle">Avatar Preset</label>
+                    <select id="refAvatarStyle" class="custom-select full-width">
+                        <option value="male_friendly">Friendly Professional Male Avatar</option>
+                        <option value="female_friendly">Friendly Professional Female Avatar</option>
+                        <option value="experienced">Experienced Specialist Avatar</option>
+                    </select>
+                </div>
+
+                <div class="dialog-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelReferralBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary glow-effect">
+                        <i class="fa-solid fa-paper-plane"></i> Submit Referral
+                    </button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <!-- Modal 2: Helper Details Modal -->
+    <dialog id="detailModal" class="custom-dialog lg-dialog">
+        <div class="dialog-header">
+            <span class="detail-badge" id="modalCategoryBadge"><i class="fa-solid fa-scissors"></i> Barber</span>
+            <button class="close-dialog-btn" id="closeDetailModalBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="dialog-body detail-modal-body" id="detailModalContent">
+            <!-- Rendered dynamically -->
+        </div>
+    </dialog>
+
+    <!-- Modal 3: Contact Modal (Call/WhatsApp Simulator) -->
+    <dialog id="contactActionModal" class="custom-dialog sm-dialog">
+        <div class="dialog-header">
+            <h3><i class="fa-solid fa-address-book text-success"></i> Contact Provider</h3>
+            <button class="close-dialog-btn" id="closeContactModalBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="dialog-body text-center" id="contactModalContent">
+            <!-- Dynamic contact options -->
+        </div>
+    </dialog>
+
+    <!-- Toast Notification Overlay -->
+    <div id="toastNotification" class="toast hidden">
+        <i class="fa-solid fa-circle-check toast-icon"></i>
+        <span id="toastMessage">Action completed successfully</span>
+    </div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>
