@@ -32,11 +32,11 @@
                 <i class="fa-solid fa-location-dot"></i>
                 <select id="headerLocalitySelect" class="locality-select">
                     <option value="all">📍 All Localities</option>
-                    <option value="Lingampally">Lingampally</option>
-                    <option value="Nallagandla">Nallagandla</option>
-                    <option value="Gachibowli">Gachibowli</option>
-                    <option value="Tellapur">Tellapur</option>
-                    <option value="Manikonda">Manikonda</option>
+                    <option value="Green Park">Green Park</option>
+                    <option value="Sunrise Heights">Sunrise Heights</option>
+                    <option value="Central Valley">Central Valley</option>
+                    <option value="Lakeview Enclave">Lakeview Enclave</option>
+                    <option value="Metro Heights">Metro Heights</option>
                 </select>
             </div>
 
@@ -127,11 +127,11 @@
                     <label class="filter-label">Locality / Neighborhood</label>
                     <select id="sidebarLocalitySelect" class="custom-select full-width">
                         <option value="all">All Localities</option>
-                        <option value="Lingampally">Lingampally</option>
-                        <option value="Nallagandla">Nallagandla</option>
-                        <option value="Gachibowli">Gachibowli</option>
-                        <option value="Tellapur">Tellapur</option>
-                        <option value="Manikonda">Manikonda</option>
+                        <option value="Green Park">Green Park</option>
+                        <option value="Sunrise Heights">Sunrise Heights</option>
+                        <option value="Central Valley">Central Valley</option>
+                        <option value="Lakeview Enclave">Lakeview Enclave</option>
+                        <option value="Metro Heights">Metro Heights</option>
                     </select>
                 </div>
 
@@ -297,12 +297,14 @@
                     <div class="form-group">
                         <label for="refLocality">Locality / Neighborhood Area *</label>
                         <select id="refLocality" required class="custom-select full-width">
-                            <option value="Lingampally">Lingampally</option>
-                            <option value="Nallagandla">Nallagandla</option>
-                            <option value="Gachibowli">Gachibowli</option>
-                            <option value="Tellapur">Tellapur</option>
-                            <option value="Manikonda">Manikonda</option>
+                            <option value="Green Park">Green Park</option>
+                            <option value="Sunrise Heights">Sunrise Heights</option>
+                            <option value="Central Valley">Central Valley</option>
+                            <option value="Lakeview Enclave">Lakeview Enclave</option>
+                            <option value="Metro Heights">Metro Heights</option>
+                            <option value="CUSTOM">+ Add New Locality...</option>
                         </select>
+                        <input type="text" id="refCustomLocality" class="hidden mt-2" placeholder="Type new locality name (e.g. Bandra West, Sector 62)..." style="width: 100%; background: var(--bg-input); border: 1px solid var(--primary); border-radius: var(--radius-sm); padding: 0.65rem 0.9rem; color: var(--text-primary);">
                     </div>
                     <div class="form-group">
                         <label for="refExperience">Years of Experience</label>
@@ -326,13 +328,19 @@
                     <textarea id="refReview" rows="3" required placeholder="Why do you recommend them? (e.g., Very punctual, honest worker, excellent haircuts, safe driving skills...)"></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label for="refAvatarStyle">Avatar Preset</label>
-                    <select id="refAvatarStyle" class="custom-select full-width">
-                        <option value="male_friendly">Friendly Professional Male Avatar</option>
-                        <option value="female_friendly">Friendly Professional Female Avatar</option>
-                        <option value="experienced">Experienced Specialist Avatar</option>
-                    </select>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="refAvatarStyle">Avatar Preset</label>
+                        <select id="refAvatarStyle" class="custom-select full-width">
+                            <option value="male_friendly">Friendly Professional Male Avatar</option>
+                            <option value="female_friendly">Friendly Professional Female Avatar</option>
+                            <option value="experienced">Experienced Specialist Avatar</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="refPhotoFile">Upload Custom Worker Photo (Optional)</label>
+                        <input type="file" id="refPhotoFile" accept="image/*" class="custom-select full-width" style="padding: 0.45rem 0.6rem;">
+                    </div>
                 </div>
 
                 <div class="dialog-actions">

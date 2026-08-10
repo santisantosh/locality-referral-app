@@ -360,6 +360,7 @@ const DOM = {
     closeReferralModalBtn: document.getElementById('closeReferralModalBtn'),
     cancelReferralBtn: document.getElementById('cancelReferralBtn'),
     referralForm: document.getElementById('referralForm'),
+    refLocality: document.getElementById('refLocality'),
 
     detailModal: document.getElementById('detailModal'),
     closeDetailModalBtn: document.getElementById('closeDetailModalBtn'),
@@ -378,9 +379,38 @@ const DOM = {
 // Initialize Application
 document.addEventListener('DOMContentLoaded', () => {
     applyTheme(app.theme);
+    syncLocalitiesFromData();
     bindEvents();
     renderAll();
 });
+
+// Dynamic Locality Sync Helper
+function registerLocality(localityName) {
+    if (!localityName) return;
+    const selects = [DOM.headerLocalitySelect, DOM.sidebarLocalitySelect, DOM.refLocality];
+    selects.forEach(select => {
+        if (!select) return;
+        const exists = Array.from(select.options).some(opt => opt.value === localityName);
+        if (!exists) {
+            const opt = document.createElement('option');
+            opt.value = localityName;
+            opt.textContent = localityName;
+            if (select === DOM.refLocality) {
+                // Insert before CUSTOM option
+                const customOpt = select.querySelector('option[value="CUSTOM"]');
+                select.insertBefore(opt, customOpt);
+            } else {
+                select.appendChild(opt);
+            }
+        }
+    });
+}
+
+function syncLocalitiesFromData() {
+    app.providers.forEach(p => {
+        if (p.locality) registerLocality(p.locality);
+    });
+}
 
 // Theme Management
 function applyTheme(theme) {
@@ -565,6 +595,23 @@ function bindEvents() {
     DOM.closeDetailModalBtn.addEventListener('click', () => closeModal(DOM.detailModal));
     DOM.closeContactModalBtn.addEventListener('click', () => closeModal(DOM.contactActionModal));
 
+    // Custom Locality Toggle Listener
+    const refLocalitySelect = document.getElementById('refLocality');
+    const refCustomInput = document.getElementById('refCustomLocality');
+
+    if (refLocalitySelect && refCustomInput) {
+        refLocalitySelect.addEventListener('change', (e) => {
+            if (e.target.value === 'CUSTOM') {
+                refCustomInput.classList.remove('hidden');
+                refCustomInput.required = true;
+                refCustomInput.focus();
+            } else {
+                refCustomInput.classList.add('hidden');
+                refCustomInput.required = false;
+            }
+        });
+    }
+
     // Referral Form Submit
     DOM.referralForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -572,51 +619,75 @@ function bindEvents() {
         const category = document.getElementById('refCategory').value;
         const phone = document.getElementById('refPhone').value.trim();
         const whatsapp = document.getElementById('refWhatsapp').value.trim() || phone;
-        const locality = document.getElementById('refLocality').value;
+        
+        let locality = document.getElementById('refLocality').value;
+        if (locality === 'CUSTOM') {
+            locality = document.getElementById('refCustomLocality').value.trim();
+            if (!locality) locality = 'Local Area';
+        }
+        
+        // Dynamically add new locality to all dropdowns if new
+        registerLocality(locality);
+
         const experience = Number(document.getElementById('refExperience').value) || 2;
         const rate = document.getElementById('refRate').value.trim() || 'Negotiable';
         const referrer = document.getElementById('refReferrer').value.trim();
         const review = document.getElementById('refReview').value.trim();
         const avatarPreset = document.getElementById('refAvatarStyle').value;
+        const photoFileInput = document.getElementById('refPhotoFile');
 
-        // Custom preset avatars
-        let avatarUrl = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=250&q=80";
-        if (avatarPreset === 'female_friendly') {
-            avatarUrl = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=250&q=80";
-        } else if (avatarPreset === 'experienced') {
-            avatarUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=250&q=80";
-        }
+        // Helper creation function
+        const createAndSaveHelper = (avatarUrl) => {
+            const newHelper = {
+                id: "p_" + Date.now(),
+                name,
+                category,
+                phone,
+                whatsapp,
+                locality,
+                experience,
+                rate,
+                rating: 5.0,
+                endorsementsCount: 1,
+                isVerified: true,
+                referrerName: referrer,
+                recommendation: review,
+                avatarUrl,
+                gender: avatarPreset.includes('female') ? 'female' : 'male',
+                skills: [category, "Community Referred", "Punctual"],
+                xRatio: 0.2 + Math.random() * 0.6,
+                yRatio: 0.2 + Math.random() * 0.6,
+                createdAt: new Date().toISOString().split('T')[0],
+                reviews: [
+                    { author: referrer, text: review, rating: 5, date: "Just now" }
+                ]
+            };
 
-        const newHelper = {
-            id: "p_" + Date.now(),
-            name,
-            category,
-            phone,
-            whatsapp,
-            locality,
-            experience,
-            rate,
-            rating: 5.0,
-            endorsementsCount: 1,
-            isVerified: true,
-            referrerName: referrer,
-            recommendation: review,
-            avatarUrl,
-            gender: avatarPreset.includes('female') ? 'female' : 'male',
-            skills: [category, "Community Referred", "Punctual"],
-            xRatio: 0.2 + Math.random() * 0.6,
-            yRatio: 0.2 + Math.random() * 0.6,
-            createdAt: new Date().toISOString().split('T')[0],
-            reviews: [
-                { author: referrer, text: review, rating: 5, date: "Just now" }
-            ]
+            app.addProvider(newHelper);
+            DOM.referralForm.reset();
+            const refCustomInput = document.getElementById('refCustomLocality');
+            if (refCustomInput) refCustomInput.classList.add('hidden');
+            closeModal(DOM.referralModal);
+            showToast(`🎉 ${name} has been added to ${locality} referrals!`, 'fa-solid fa-party-horn');
+            renderAll();
         };
 
-        app.addProvider(newHelper);
-        DOM.referralForm.reset();
-        closeModal(DOM.referralModal);
-        showToast(`🎉 ${name} has been added to ${locality} referrals!`, 'fa-solid fa-party-horn');
-        renderAll();
+        // Check if user uploaded a custom photo file
+        if (photoFileInput && photoFileInput.files && photoFileInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                createAndSaveHelper(event.target.result);
+            };
+            reader.readAsDataURL(photoFileInput.files[0]);
+        } else {
+            let avatarUrl = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=250&q=80";
+            if (avatarPreset === 'female_friendly') {
+                avatarUrl = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=250&q=80";
+            } else if (avatarPreset === 'experienced') {
+                avatarUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=250&q=80";
+            }
+            createAndSaveHelper(avatarUrl);
+        }
     });
 }
 
